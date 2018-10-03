@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Calculadora</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+        <script
+            src="https://code.jquery.com/jquery-3.3.1.js"
+            integrity="sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60="
+        crossorigin="anonymous"></script>
+    </head>
+    <body> 
+        <div class="container" style="padding: 3em">
+            <h1>Calculator</h1>
+            <form id="formulario">
+                <div>
+                    <label for="num1">Número 1</label>
+                    <input id="num1" type="text" class="form-control" name="num1">
+                </div>
+                <div>
+                    <label for="num2">Número 2</label>
+                    <input id="num2" type="text" class="form-control" name="num2">
+                </div>
+                <div>
+                    <h3>Elegir opción</h3>
+                    <label><input type="radio" value="add" name="operacion">Sumar</label>
+                    <label><input type="radio" value="substract" name="operacion">Restar</label>
+                    <label><input type="radio" value="multiply" name="operacion">Multiplicar</label>
+                    <label><input type="radio" value="division" name="operacion">Dividir</label>
+                </div>
+                <div>
+                    <input id="btnEnviar" type="button" class="btn btn-warning" name="enviar" value="Enviar">
+                    <input type="button" id="btnLimpiar" class="btn btn-info" name="limpiar" value="Limpiar">
+                </div>
+            </form>
+            <div id="alerta" class="alert alert-success"></div>
+            <div id="error" class="alert alert-danger"></div>
+        </div>  
+        <div>
+            <h2>Hola perros</h2>
+        </div>
+        <script>
+            
+            function esReal(num) {
+                var exReg = /^-?\d+(\.\d+)?$/;
+                if (exReg.test(num)) {
+                    return true;
+                } else {
+                    return false;
+                }
+            }
+            //Limpiar los dos renglones
+            $(document).ready(function () {
+                $("btnLimpiar").click(function () {
+                    $("#num1").val("");
+                    $("#num2").val("");
+                    $("#alerta").empty();
+                    $("#error").empty();
+                });
+
+                $("#btnEnviar").click(function () {
+                    $.ajax({
+                        url: "/calculadora/ServletCalc",
+                        cache: false,
+                        method: "get",
+                        data: $("#formulario").serialize(),
+                        dataType: "json",
+                        success: function (data) {
+                            $("#alerta").empty().append("Resultado de la operacion: " + data.toString());
+                            $("#error").empty();
+                        },
+                        error: function (data) {
+                            var msj = "Mensaje del servidor: " + data.responseJSON.mensaje;
+
+                            $("#error").empty().append("Ha habido un error. Por favor, intentelo de nuevo</br>" + msj);
+                            $("#alerta").empty();
+                        }
+                    });
+                });
+            });
+        </script>
+    </body>
+</html>
